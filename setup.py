@@ -4,7 +4,7 @@ install_requires = ["onnxruntime", "torch", "sentencepiece", "huggingface-hub", 
 
 setup(
     name="punctuators",
-    version="0.0.0",
+    version="0.0.2",
     description="Punctuators and such",
     author="Shane",
     author_email="shane.carroll@utsa.edu",

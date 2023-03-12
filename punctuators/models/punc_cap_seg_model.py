@@ -66,6 +66,11 @@ class PunctCapSegModelONNX(PunctCapSegModel):
                 spe_filename="spe_unigram_64k_lowercase_47lang.model",
                 model_filename="punct_cap_seg_47lang.onnx",
             ),
+            "pcs_en": PunctCapSegConfigONNX(
+                hf_repo_id="1-800-BAD-CODE/punct_cap_seg_en",
+                spe_filename="spe_32k_lc_en.model",
+                model_filename="punct_cap_seg_en.onnx",
+            ),
         }
         return info
 

@@ -3,6 +3,9 @@ from typing import List, Optional, Dict, Union
 
 from sentencepiece import SentencePieceProcessor
 
+# Probably need to move somewhere common
+ACRONYM_TOKEN = "<ACRONYM>"
+
 
 @dataclass
 class PCSResultSegment:
@@ -79,8 +82,12 @@ class PunctCapSegResultCollector:
                     char = char.upper()
                 # Append char after pre-punc and upper-casing, before post-punt
                 current_chars.append(char)
-                # If this is the final char in the subtoken, and we predict "post-punct", insert it
-                if token_char_idx == len(token) - 1 and post_preds[token_idx] is not None:
+                # Check if we need to insert "post" punctuation
+                label = post_preds[token_idx]
+                if label == ACRONYM_TOKEN:
+                    # All characters in this subtoken are punctuated with a period
+                    current_chars.append(".")
+                elif token_char_idx == len(token) - 1 and post_preds[token_idx] is not None:
                     current_chars.append(post_preds[token_idx])
                 # If this token is a sentence boundary, finalize the current sentence and reset
                 if self._apply_sbd and token_char_idx == len(token) - 1 and sbd_preds[token_idx]:
