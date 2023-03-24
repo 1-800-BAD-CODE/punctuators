@@ -71,6 +71,11 @@ class PunctCapSegModelONNX(PunctCapSegModel):
                 spe_filename="spe_32k_lc_en.model",
                 model_filename="punct_cap_seg_en.onnx",
             ),
+            "pcs_romance": PunctCapSegConfigONNX(
+                hf_repo_id="1-800-BAD-CODE/punctuation_fullstop_truecase_romance",
+                spe_filename="sp.model",
+                model_filename="model.onnx",
+            ),
         }
         return info
 
