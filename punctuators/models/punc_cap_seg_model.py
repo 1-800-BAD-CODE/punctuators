@@ -22,8 +22,8 @@ class PunctCapSegConfig:
 
 @dataclass
 class PunctCapSegConfigONNX(PunctCapSegConfig):
-    spe_filename: str
-    model_filename: str
+    spe_filename: str = "sp.model"
+    model_filename: str = "model.onnx"
     config_filename: str = "config.yaml"
     hf_repo_id: Optional[str] = None
     directory: Optional[str] = None
@@ -81,12 +81,23 @@ class PunctCapSegModelONNX(PunctCapSegModel):
 
     @classmethod
     def from_pretrained(cls, pretrained_name: str) -> "PunctCapSegModelONNX":
-        available_models: Dict[str, PunctCapSegConfigONNX] = cls.pretrained_model_info()
-        if pretrained_name not in available_models:
-            raise ValueError(
-                f"Pretrained name '{pretrained_name}' not in available models: '{list(available_models.keys())}'"
-            )
-        return cls(cfg=available_models[pretrained_name])
+        """
+
+        Args:
+            pretrained_name: 
+        """
+        cfg: PunctCapSegConfigONNX
+        if "/" in pretrained_name:
+            # Assume this is a HuggingFace repository with default model names
+            cfg = PunctCapSegConfigONNX(hf_repo_id=pretrained_name)
+        else:
+            available_models: Dict[str, PunctCapSegConfigONNX] = cls.pretrained_model_info()
+            if pretrained_name not in available_models:
+                raise ValueError(
+                    f"Pretrained name '{pretrained_name}' not in available models: '{list(available_models.keys())}'"
+                )
+            cfg = available_models[pretrained_name]
+        return cls(cfg=cfg)
 
     @property
     def languages(self) -> List[str]:
