@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Union, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import onnxruntime as ort
 import torch
@@ -50,7 +50,9 @@ class PunctCapSegModelONNX(PunctCapSegModel):
             onnx_path = os.path.join(cfg.directory, cfg.model_filename)
             config_path = os.path.join(cfg.directory, cfg.config_filename)
         self._tokenizer: SentencePieceProcessor = SentencePieceProcessor(self._spe_path)  # noqa
-        self._ort_session: ort.InferenceSession = ort.InferenceSession(onnx_path)
+        self._ort_session: ort.InferenceSession = ort.InferenceSession(
+            onnx_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+        )
         self._config = OmegaConf.load(config_path)
         self._max_len = self._config.max_length
         self._pre_labels: List[str] = self._config.pre_labels

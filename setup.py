@@ -1,10 +1,10 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 install_requires = ["onnxruntime", "torch>=1.9", "sentencepiece", "huggingface-hub", "omegaconf", "numpy"]
 
 setup(
     name="punctuators",
-    version="0.0.4",
+    version="0.0.6",
     description="Punctuators and such",
     author="Shane",
     author_email="shane.carroll@utsa.edu",
