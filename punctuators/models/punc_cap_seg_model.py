@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import onnxruntime as ort
 import torch
@@ -37,7 +37,7 @@ class PunctCapSegModel:
 
 
 class PunctCapSegModelONNX(PunctCapSegModel):
-    def __init__(self, cfg: PunctCapSegConfigONNX):
+    def __init__(self, cfg: PunctCapSegConfigONNX, ort_providers: Optional[Any]=None):
         super().__init__()
         if cfg.hf_repo_id is not None:
             self._spe_path = hf_hub_download(repo_id=cfg.hf_repo_id, filename=cfg.spe_filename)
@@ -50,8 +50,10 @@ class PunctCapSegModelONNX(PunctCapSegModel):
             onnx_path = os.path.join(cfg.directory, cfg.model_filename)
             config_path = os.path.join(cfg.directory, cfg.config_filename)
         self._tokenizer: SentencePieceProcessor = SentencePieceProcessor(self._spe_path)  # noqa
+        if not ort_providers:
+            ort_providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
         self._ort_session: ort.InferenceSession = ort.InferenceSession(
-            onnx_path, providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+            onnx_path, providers=ort_providers
         )
         self._config = OmegaConf.load(config_path)
         self._max_len = self._config.max_length
@@ -82,7 +84,7 @@ class PunctCapSegModelONNX(PunctCapSegModel):
         return info
 
     @classmethod
-    def from_pretrained(cls, pretrained_name: str) -> "PunctCapSegModelONNX":
+    def from_pretrained(cls, pretrained_name: str, ort_providers: Optional[Any]=None) -> "PunctCapSegModelONNX":
         """
 
         Args:
@@ -99,7 +101,7 @@ class PunctCapSegModelONNX(PunctCapSegModel):
                     f"Pretrained name '{pretrained_name}' not in available models: '{list(available_models.keys())}'"
                 )
             cfg = available_models[pretrained_name]
-        return cls(cfg=cfg)
+        return cls(cfg=cfg, ort_providers=ort_providers)
 
     @property
     def languages(self) -> List[str]:
