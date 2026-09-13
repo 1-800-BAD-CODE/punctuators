@@ -88,7 +88,7 @@ class SBDModelONNX(SBDModel):
             batch_size_tokens=batch_size_tokens,
             overlap=overlap,
             max_length=self._max_len,
-            spe_model_path=self._spe_path,
+            spe_model_path=self._tokenizer,
         )
         return DataLoader(
             dataset=dataset, num_workers=num_workers, collate_fn=dataset.collate_fn, batch_sampler=dataset.sampler,
